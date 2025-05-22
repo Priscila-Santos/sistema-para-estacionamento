@@ -1,3 +1,8 @@
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+
 namespace DesafioFundamentos.Models
 {
     public class Estacionamento
@@ -14,53 +19,93 @@ namespace DesafioFundamentos.Models
 
         public void AdicionarVeiculo()
         {
-            // TODO: Pedir para o usuário digitar uma placa (ReadLine) e adicionar na lista "veiculos"
-            // *IMPLEMENTE AQUI*
             Console.WriteLine("Digite a placa do veículo para estacionar:");
+            string placa = Console.ReadLine().Trim().ToUpper();
+
+            List<string> placasRegistradas = File.Exists("data.csv")
+                ? File.ReadAllLines("data.csv").Select(l => l.Trim().ToUpper()).ToList()
+                : new List<string>();
+
+            if (veiculos.Any(x => x.ToUpper() == placa) || placasRegistradas.Contains(placa))
+            {
+                Console.WriteLine("Desculpe, esse veículo já está estacionado.");
+            }
+            else
+            {
+                veiculos.Add(placa);
+                Console.WriteLine($"O veículo {placa} foi estacionado com sucesso!");
+
+                using (StreamWriter sw = new StreamWriter("data.csv", true))
+                {
+                    sw.WriteLine(placa);
+                }
+            }
         }
 
         public void RemoverVeiculo()
         {
             Console.WriteLine("Digite a placa do veículo para remover:");
+            string placa = Console.ReadLine().Trim().ToUpper();
 
-            // Pedir para o usuário digitar a placa e armazenar na variável placa
-            // *IMPLEMENTE AQUI*
-            string placa = "";
+            List<string> placasRegistradas = File.Exists("data.csv")
+                ? File.ReadAllLines("data.csv").Select(l => l.Trim().ToUpper()).ToList()
+                : new List<string>();
 
-            // Verifica se o veículo existe
-            if (veiculos.Any(x => x.ToUpper() == placa.ToUpper()))
+            if (placasRegistradas.Contains(placa))
             {
                 Console.WriteLine("Digite a quantidade de horas que o veículo permaneceu estacionado:");
+                int horas = Convert.ToInt32(Console.ReadLine());
 
-                // TODO: Pedir para o usuário digitar a quantidade de horas que o veículo permaneceu estacionado,
-                // TODO: Realizar o seguinte cálculo: "precoInicial + precoPorHora * horas" para a variável valorTotal                
-                // *IMPLEMENTE AQUI*
-                int horas = 0;
-                decimal valorTotal = 0; 
+                decimal valorTotal = precoInicial + (precoPorHora * horas);
+                veiculos.Remove(placa); // Caso ainda esteja na lista temporária
 
-                // TODO: Remover a placa digitada da lista de veículos
-                // *IMPLEMENTE AQUI*
+                // Exibir comprovante formatado
+                Console.Clear();
+                Console.WriteLine("╔═══════════════════════════════════════╗");
+                Console.WriteLine("║       COMPROVANTE DE PAGAMENTO       ║");
+                Console.WriteLine("╠═══════════════════════════════════════╣");
+                Console.WriteLine($"║ Placa do veículo: {placa,-22}║");
+                Console.WriteLine($"║ Horas estacionado: {horas,-20}║");
+                Console.WriteLine($"║ Preço inicial:     R$ {precoInicial,-14:N2}║");
+                Console.WriteLine($"║ Preço por hora:    R$ {precoPorHora,-14:N2}║");
+                Console.WriteLine("╠═══════════════════════════════════════╣");
+                Console.WriteLine($"║ TOTAL A PAGAR:     R$ {valorTotal,-14:N2}║");
+                Console.WriteLine("╚═══════════════════════════════════════╝");
 
-                Console.WriteLine($"O veículo {placa} foi removido e o preço total foi de: R$ {valorTotal}");
+                // Atualiza o arquivo CSV
+                placasRegistradas = placasRegistradas.Where(p => p != placa).ToList();
+                File.WriteAllLines("data.csv", placasRegistradas);
             }
             else
             {
-                Console.WriteLine("Desculpe, esse veículo não está estacionado aqui. Confira se digitou a placa corretamente");
+                Console.WriteLine("Desculpe, esse veículo não está estacionado aqui. Confira se digitou a placa corretamente.");
             }
         }
 
         public void ListarVeiculos()
         {
-            // Verifica se há veículos no estacionamento
-            if (veiculos.Any())
+            if (File.Exists("data.csv"))
             {
-                Console.WriteLine("Os veículos estacionados são:");
-                // TODO: Realizar um laço de repetição, exibindo os veículos estacionados
-                // *IMPLEMENTE AQUI*
+                var linhas = File.ReadAllLines("data.csv").Where(l => !string.IsNullOrWhiteSpace(l)).ToList();
+                if (linhas.Count > 0)
+                {
+                    Console.WriteLine("╔══════════════════════════════════════╗");
+                    Console.WriteLine("║    VEÍCULOS ESTACIONADOS ATUALMENTE ║");
+                    Console.WriteLine("╠══════════════════════════════════════╣");
+                    foreach (string linha in linhas)
+                    {
+                        Console.WriteLine($"║ {linha,-36}║");
+                    }
+                    Console.WriteLine("╚══════════════════════════════════════╝");
+                }
+                else
+                {
+                    Console.WriteLine("Não há veículos estacionados no momento.");
+                }
             }
             else
             {
-                Console.WriteLine("Não há veículos estacionados.");
+                Console.WriteLine("Nenhum veículo registrado até o momento.");
             }
         }
     }
