@@ -39,7 +39,7 @@ flowchart TD
     option3[Listar Veículos]
     option4[Encerrar Programa]
 
-    checkPlaca[Verifica se placa já existe (memória/arquivo)]
+    checkPlaca[Verifica se placa já existe]
     addPlaca[Adiciona placa à memória e ao arquivo CSV]
     sucessoAdd[Placa cadastrada com sucesso!]
 
