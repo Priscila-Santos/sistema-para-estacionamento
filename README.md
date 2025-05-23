@@ -127,4 +127,6 @@ O arquivo é atualizado automaticamente ao adicionar ou remover veículos.
 
  - Interface gráfica (WPF ou WinForms)
 
+## Resolução no Notion 
+[Link no Notion](https://full-orangutan-0a9.notion.site/Desafio-de-C-digo-NET-C-1fbefaf93dc6808ea487d04fe4c2fc4b) sobre o processo de resolução do desafio
 
